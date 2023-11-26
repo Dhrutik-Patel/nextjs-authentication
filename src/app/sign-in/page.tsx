@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { FormEvent, useState } from 'react';
 
 const SignIn = () => {
+    const router = useRouter();
     const [user, setUser] = useState({
         email: '',
         password: '',
@@ -22,6 +24,9 @@ const SignIn = () => {
 
         // Reset the form after submission to clear the inputs.
         setUser({ email: '', password: '' });
+
+        // Redirect to the home page after successful sign up.
+        router.push('/');
     };
 
     return (

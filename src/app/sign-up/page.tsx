@@ -1,9 +1,13 @@
 'use client';
 
+import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { FormEvent, useState } from 'react';
+import toast from 'react-hot-toast';
 
 const SignUp = () => {
+    const router = useRouter();
     const [user, setUser] = useState({
         username: '',
         email: '',
@@ -16,13 +20,37 @@ const SignUp = () => {
         setUser({ ...user, [name]: value });
     };
 
-    const handleSignUp = (event: FormEvent<HTMLFormElement>) => {
+    const handleSignUp = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        console.log(user);
+        // Form validation.
+        if (!user.username || !user.email || !user.password) {
+            return toast.error('Please fill in all fields!');
+        }
+
+        if (user.username.length < 5) {
+            return toast.error('Username must be at least 5 characters long!');
+        }
+
+        if (!user.email.includes('@')) {
+            return toast.error('Please enter a valid email address!');
+        }
+
+        if (user.password.length < 6) {
+            return toast.error('Password must be at least 6 characters long!');
+        }
+
+        // Sign up the user.
+        const response = await axios.post('/api/users/sign-up', user);
+
+        // Toaster notification for successful sign up.
+        toast.success('You have successfully signed up!');
 
         // Reset the form after submission to clear the inputs.
         setUser({ username: '', email: '', password: '' });
+
+        // Redirect to the home page after successful sign up.
+        router.push('/');
     };
 
     return (
