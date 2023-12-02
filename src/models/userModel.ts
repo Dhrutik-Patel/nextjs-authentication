@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema(
         avatar: {
             type: String,
             required: false,
-            default: 'https://firebasestorage.googleapis.com/v0/b/tesla-clone-2808.appspot.com/o/user.png?alt=media&token=476996af-3798-4556-a9cb-0cd3117563f6',
+            default:
+                'https://firebasestorage.googleapis.com/v0/b/tesla-clone-2808.appspot.com/o/user.png?alt=media&token=476996af-3798-4556-a9cb-0cd3117563f6',
         },
         isVerified: {
             type: Boolean,
