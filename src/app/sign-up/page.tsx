@@ -23,34 +23,44 @@ const SignUp = () => {
     const handleSignUp = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // Form validation.
-        if (!user.username || !user.email || !user.password) {
-            return toast.error('Please fill in all fields!');
+        try {
+            // Form validation.
+            if (!user.username || !user.email || !user.password) {
+                throw new Error('Please fill in all fields!');
+            }
+
+            if (user.username.length < 5) {
+                throw new Error('Username must be at least 5 characters long!');
+            }
+
+            if (!user.email.includes('@')) {
+                throw new Error('Please enter a valid email address!');
+            }
+
+            if (user.password.length < 6) {
+                throw new Error('Password must be at least 6 characters long!');
+            }
+
+            // Sign up the user.
+            const response = await axios.post('/api/users/sign-up', user);
+
+            // Handle errors.
+            if (response.data.error) {
+                throw new Error(response.data.error);
+            }
+
+            // Toaster notification for successful sign up.
+            toast.success('You have successfully signed up!');
+
+            // Redirect to the home page after successful sign up.
+            router.push('/sign-in');
+        } catch (error: any) {
+            // Handle errors here
+            toast.error("Couldn't sign up! Please try again.");
         }
-
-        if (user.username.length < 5) {
-            return toast.error('Username must be at least 5 characters long!');
-        }
-
-        if (!user.email.includes('@')) {
-            return toast.error('Please enter a valid email address!');
-        }
-
-        if (user.password.length < 6) {
-            return toast.error('Password must be at least 6 characters long!');
-        }
-
-        // Sign up the user.
-        const response = await axios.post('/api/users/sign-up', user);
-
-        // Toaster notification for successful sign up.
-        toast.success('You have successfully signed up!');
 
         // Reset the form after submission to clear the inputs.
         setUser({ username: '', email: '', password: '' });
-
-        // Redirect to the home page after successful sign up.
-        router.push('/');
     };
 
     return (
@@ -84,7 +94,7 @@ const SignUp = () => {
                                 required
                                 className='block w-full rounded-md border-0 outline-none p-1.5 text-black shadow-sm placeholder:text-gray-500'
                                 placeholder='Enter your username'
-                                defaultValue={user.username}
+                                value={user.username}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -106,7 +116,7 @@ const SignUp = () => {
                                 required
                                 className='block w-full rounded-md border-0 outline-none p-1.5 text-black shadow-sm placeholder:text-gray-500'
                                 placeholder='Enter your email address'
-                                defaultValue={user.email}
+                                value={user.email}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -128,7 +138,7 @@ const SignUp = () => {
                                 required
                                 className='block w-full rounded-md border-0 outline-none p-1.5 text-black shadow-sm placeholder:text-gray-500'
                                 placeholder='Enter your password'
-                                defaultValue={user.password}
+                                value={user.password}
                                 onChange={handleInputChange}
                             />
                         </div>

@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { FormEvent, useState } from 'react';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const SignIn = () => {
     const router = useRouter();
@@ -17,16 +19,38 @@ const SignIn = () => {
         setUser({ ...user, [name]: value });
     };
 
-    const handleSignIn = (event: FormEvent<HTMLFormElement>) => {
+    const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        console.log(user);
+        try {
+            // Form validation.
+            if (!user.email || !user.password) {
+                throw new Error('Please fill in all fields!');
+            }
+
+            if (!user.email.includes('@')) {
+                throw new Error('Please enter a valid email address!');
+            }
+
+            if (user.password.length < 6) {
+                throw new Error('Password must be at least 6 characters long!');
+            }
+
+            // Sign in the user.
+            const response = await axios.post('/api/users/sign-in', user);
+
+            // Toaster notification for successful sign up.
+            toast.success('You have successfully signed in!');
+
+            // Redirect to the home page after successful sign up.
+            router.push('/');
+        } catch (error: any) {
+            // Handle errors here
+            toast.error("Couldn't sign in! Please try again.");
+        }
 
         // Reset the form after submission to clear the inputs.
         setUser({ email: '', password: '' });
-
-        // Redirect to the home page after successful sign up.
-        router.push('/');
     };
 
     return (
@@ -60,7 +84,7 @@ const SignIn = () => {
                                 required
                                 className='block w-full rounded-md border-0 outline-none p-1.5 text-black shadow-sm placeholder:text-gray-500'
                                 placeholder='Enter your email address'
-                                defaultValue={user.email}
+                                value={user.email}
                                 onChange={handleInputChange}
                             />
                         </div>
@@ -82,7 +106,7 @@ const SignIn = () => {
                                 required
                                 className='block w-full rounded-md border-0 outline-none p-1.5 text-black shadow-sm placeholder:text-gray-500'
                                 placeholder='Enter your password'
-                                defaultValue={user.password}
+                                value={user.password}
                                 onChange={handleInputChange}
                             />
                         </div>
