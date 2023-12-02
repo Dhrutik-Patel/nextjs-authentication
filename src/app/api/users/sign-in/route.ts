@@ -28,10 +28,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             );
         }
 
-        // Hash password with bcryptjs
-        const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(password, salt);
-
         // Check if password is correct
         const isPasswordCorrect = await bcryptjs.compare(
             password,
@@ -52,7 +48,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             id: user._id,
             username: user.username,
             email: user.email,
-            avatar: user.avatar,
         };
 
         const jwtToken = await jwt.sign(token, process.env.JWT_SECRET!, {
